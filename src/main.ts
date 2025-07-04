@@ -6,7 +6,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global ValidationPipe (xài class-validator)
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   // Swagger setup
@@ -23,4 +22,6 @@ async function bootstrap() {
   await app.listen(PORT);
   console.log(`🚀 Server is running at http://localhost:${PORT}`);
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Error during bootstrap:', err);
+});
