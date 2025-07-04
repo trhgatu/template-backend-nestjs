@@ -6,7 +6,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global ValidationPipe (xài class-validator)
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   // Swagger setup
