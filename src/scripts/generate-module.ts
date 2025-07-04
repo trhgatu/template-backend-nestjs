@@ -1,12 +1,27 @@
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { mkdirSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 const name = process.argv[2];
+const schemaArg = process.argv.find((arg) => arg.startsWith('--schema='));
 
 if (!name) {
   console.error('❌ Please provide a module name!');
   process.exit(1);
 }
+
+const toPascal = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const pascalName = toPascal(name);
+
+// Parse schema string to fields
+const schemaFields = schemaArg
+  ? schemaArg
+      .replace('--schema=', '')
+      .split(',')
+      .map((pair) => {
+        const [key, type] = pair.split(':');
+        return { key, type };
+      })
+  : [];
 
 const folder = join(__dirname, `../modules/${name}`);
 if (existsSync(folder)) {
@@ -14,38 +29,82 @@ if (existsSync(folder)) {
   process.exit(1);
 }
 
+// Create folders
 mkdirSync(folder, { recursive: true });
+mkdirSync(join(folder, 'dtos'));
+mkdirSync(join(folder, 'validators'));
 
-const toPascal = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const pascalName = toPascal(name);
+// === Template === //
+const modelFields = schemaFields
+  .map((f) => `  @Prop()\n  ${f.key}: ${f.type};`)
+  .join('\n');
 
-const templates: Record<string, string> = {
-  [`${name}.controller.ts`]: `import { Controller } from '@nestjs/common';
+const modelContent = `import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
+@Schema({ timestamps: true })
+export class ${pascalName} extends Document {
+${modelFields || '  // TODO: define schema fields here'}
+}
+
+export const ${pascalName}Schema = SchemaFactory.createForClass(${pascalName});
+`;
+
+const controllerContent = `import { Controller } from '@nestjs/common';
 
 @Controller('${name}')
-export class ${pascalName}Controller {}`,
-  [`${name}.service.ts`]: `import { Injectable } from '@nestjs/common';
+export class ${pascalName}Controller {}
+`;
+
+const serviceContent = `import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class ${pascalName}Service {}`,
-  [`${name}.schema.ts`]: `import { Schema, model } from 'mongoose';
+export class ${pascalName}Service {}
+`;
 
-const ${pascalName}Schema = new Schema({}, { timestamps: true });
+const moduleContent = `import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ${pascalName}Controller } from './${name}.controller';
+import { ${pascalName}Service } from './${name}.service';
+import { ${pascalName}, ${pascalName}Schema } from './${name}.model';
 
-export const ${pascalName}Model = model('${pascalName}', ${pascalName}Schema);`,
-  [`${name}.dto.ts`]: `export class Create${pascalName}Dto {}`,
-  [`${name}.validator.ts`]: `// import z from 'zod'`,
-  [`${name}.types.ts`]: `export type ${pascalName}Type = {};`,
-  [`${name}.interface.ts`]: `export interface I${pascalName} {}`,
-  [`${name}.route.ts`]: `import { ${pascalName}Controller } from './${name}.controller';
+@Module({
+  imports: [
+    MongooseModule.forFeature([
+      { name: ${pascalName}.name, schema: ${pascalName}Schema },
+    ]),
+  ],
+  controllers: [${pascalName}Controller],
+  providers: [${pascalName}Service],
+})
+export class ${pascalName}Module {}
+`;
 
-export default [${pascalName}Controller];`,
-  [`index.ts`]: `export * from './${name}.controller';
-export * from './${name}.service';`,
-};
+const dtoContent = `export class Create${pascalName}Dto {
+  // TODO: define DTO fields
+}
+`;
 
-Object.entries(templates).forEach(([filename, content]) => {
-  writeFileSync(join(folder, filename), content.trim());
-});
+const validatorContent = `// import z from 'zod'
+
+// export const Create${pascalName}Validator = z.object({})`;
+
+const indexContent = `export * from './${name}.controller';
+export * from './${name}.service';
+export * from './${name}.model';
+export * from './${name}.module';
+`;
+
+// === Write files === //
+writeFileSync(join(folder, `${name}.model.ts`), modelContent);
+writeFileSync(join(folder, `${name}.controller.ts`), controllerContent);
+writeFileSync(join(folder, `${name}.service.ts`), serviceContent);
+writeFileSync(join(folder, `${name}.module.ts`), moduleContent);
+writeFileSync(join(folder, `index.ts`), indexContent);
+writeFileSync(join(folder, `dtos/create-${name}.dto.ts`), dtoContent);
+writeFileSync(
+  join(folder, `validators/${name}.validator.ts`),
+  validatorContent,
+);
 
 console.log(`✅ Module "${name}" generated successfully.`);
