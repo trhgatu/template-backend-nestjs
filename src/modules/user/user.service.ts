@@ -18,15 +18,18 @@ export class UserService {
     const limit = parseInt(query.limit || '10', 10);
     const skip = (page - 1) * limit;
 
+    const search = query.keyword
+      ? { name: { $regex: query.keyword, $options: 'i' } }
+      : {};
+
     return paginate(
       this.userModel
-        .find()
+        .find(search)
         .skip(skip)
         .limit(limit)
         .populate('roleId')
-        .select('-password -refreshToken')
-        .exec(),
-      this.userModel.countDocuments().exec(),
+        .select('-password -refreshToken'),
+      this.userModel.countDocuments(search),
       page,
       limit,
     );
