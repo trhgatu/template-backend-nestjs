@@ -1,10 +1,10 @@
 // src/shared/seeder/permission.seed.ts
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from 'src/app.module';
+import { SeederModule } from './seeder.module';
 import { PermissionSeeder } from './permission.seeder';
 
 async function bootstrap() {
-  const app = await NestFactory.createApplicationContext(AppModule);
+  const app = await NestFactory.createApplicationContext(SeederModule);
   const seeder = app.get(PermissionSeeder);
 
   await seeder.seed();
