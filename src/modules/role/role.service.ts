@@ -2,7 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Role, RoleDocument } from './role.schema';
 import { Model } from 'mongoose';
-import { CreateRoleDto, UpdateRoleDto } from './dtos';
+import { paginate } from '@shared/utils';
+import { CreateRoleDto, UpdateRoleDto, QueryRoleDto } from './dtos';
 
 @Injectable()
 export class RoleService {
@@ -12,8 +13,21 @@ export class RoleService {
     return await this.roleModel.create(dto);
   }
 
-  async findAll() {
-    return await this.roleModel.find();
+  async findAll(query: QueryRoleDto) {
+    const page = parseInt(query.page || '1', 10);
+    const limit = parseInt(query.limit || '10', 10);
+    const skip = (page - 1) * limit;
+
+    const search = query.keyword
+      ? { name: { $regex: query.keyword, $options: 'i' } }
+      : {};
+
+    return paginate(
+      this.roleModel.find(search).skip(skip).limit(limit),
+      this.roleModel.countDocuments(search),
+      page,
+      limit,
+    );
   }
 
   async findById(id: string) {

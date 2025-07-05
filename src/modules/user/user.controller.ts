@@ -6,9 +6,10 @@ import {
   Body,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, UpdateUserDto } from './dtos';
+import { CreateUserDto, UpdateUserDto, QueryUserDto } from './dtos';
 
 @Controller('users')
 export class UserController {
@@ -20,8 +21,8 @@ export class UserController {
   }
 
   @Get('/')
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query() query: QueryUserDto) {
+    return this.userService.findAll(query);
   }
 
   @Get(':id')

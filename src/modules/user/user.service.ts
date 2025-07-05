@@ -2,7 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './user.schema';
 import { Model } from 'mongoose';
-import { CreateUserDto, UpdateUserDto } from './dtos';
+import { CreateUserDto, UpdateUserDto, QueryUserDto } from './dtos';
+import { paginate } from '@shared/utils';
 
 @Injectable()
 export class UserService {
@@ -12,8 +13,23 @@ export class UserService {
     return await this.userModel.create(dto);
   }
 
-  async findAll() {
-    return await this.userModel.find().populate('roleId');
+  async findAll(query: QueryUserDto) {
+    const page = parseInt(query.page || '1', 10);
+    const limit = parseInt(query.limit || '10', 10);
+    const skip = (page - 1) * limit;
+
+    return paginate(
+      this.userModel
+        .find()
+        .skip(skip)
+        .limit(limit)
+        .populate('roleId')
+        .select('-password -refreshToken')
+        .exec(),
+      this.userModel.countDocuments().exec(),
+      page,
+      limit,
+    );
   }
 
   async findById(id: string) {
