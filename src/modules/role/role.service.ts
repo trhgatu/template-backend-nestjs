@@ -23,7 +23,11 @@ export class RoleService {
       : {};
 
     return paginate(
-      this.roleModel.find(search).skip(skip).limit(limit),
+      this.roleModel
+        .find(search)
+        .skip(skip)
+        .limit(limit)
+        .populate('permissions'),
       this.roleModel.countDocuments(search),
       page,
       limit,

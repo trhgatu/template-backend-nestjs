@@ -8,6 +8,7 @@ import { TestModule } from '@modules/test';
 import { AuthModule } from '@modules/auth/auth.module';
 import { RoleModule } from '@modules/role/role.module';
 import { UserModule } from '@modules/user';
+import { PermissionModule } from '@modules/permission';
 /* import { AppService } from './app.service';  */
 
 @Module({
@@ -26,6 +27,7 @@ import { UserModule } from '@modules/user';
     AuthModule,
     RoleModule,
     UserModule,
+    PermissionModule,
   ],
   controllers: [AppController],
 })
