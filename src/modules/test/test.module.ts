@@ -1,8 +1,9 @@
+// test.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TestController } from './test.controller';
 import { TestService } from './test.service';
-import { Test, TestSchema } from './test.model';
+import { Test, TestSchema } from './test.schema';
 
 @Module({
   imports: [
