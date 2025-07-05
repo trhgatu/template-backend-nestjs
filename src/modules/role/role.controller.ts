@@ -6,9 +6,10 @@ import {
   Body,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
-import { CreateRoleDto, UpdateRoleDto } from './dtos';
+import { CreateRoleDto, UpdateRoleDto, QueryRoleDto } from './dtos';
 
 @Controller('roles')
 export class RoleController {
@@ -20,8 +21,8 @@ export class RoleController {
   }
 
   @Get('/')
-  findAll() {
-    return this.roleService.findAll();
+  findAll(@Query() query: QueryRoleDto) {
+    return this.roleService.findAll(query);
   }
 
   @Get(':id')

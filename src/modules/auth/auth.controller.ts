@@ -1,9 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dtos/register.dto';
-import { LoginDto } from './dtos/login.dto';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { RegisterDto, LoginDto } from './dtos';
+import { JwtAuthGuard, RefreshTokenGuard } from '@modules/auth/guards';
 import { GetUser } from './decorators/get-user.decorator';
 import { UserDocument } from '@modules/user/user.schema';
 import { Request } from 'express';
