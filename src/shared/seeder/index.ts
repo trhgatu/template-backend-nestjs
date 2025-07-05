@@ -1,3 +1,2 @@
-export * from './permission.seeder';
-export * from './permission.seed';
-export * from './seeder.module';
+export * from './permission/permission.seeder';
+export * from './role/role.seeder';

@@ -3,11 +3,12 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import databaseConfig from '@config/database.config';
 import { ConfigModule } from '@nestjs/config';
-import { PermissionSeeder } from './permission.seeder';
+import { PermissionSeeder, RoleSeeder } from '@shared/seeder';
 import {
   Permission,
   PermissionSchema,
 } from '@modules/permission/permission.schema';
+import { Role, RoleSchema } from '@modules/role/role.schema';
 
 @Module({
   imports: [
@@ -20,8 +21,9 @@ import {
     }),
     MongooseModule.forFeature([
       { name: Permission.name, schema: PermissionSchema },
+      { name: Role.name, schema: RoleSchema },
     ]),
   ],
-  providers: [PermissionSeeder],
+  providers: [PermissionSeeder, RoleSeeder],
 })
 export class SeederModule {}
