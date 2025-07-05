@@ -11,5 +11,5 @@ export class CreateRoleDto {
   @IsOptional()
   @IsArray()
   @IsMongoId({ each: true })
-  permissionIds?: string[];
+  permissions?: string[];
 }

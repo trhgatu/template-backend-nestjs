@@ -7,14 +7,21 @@ import {
   Patch,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
+import { Permissions } from '@shared/decorators';
+import { PermissionEnum } from '@shared/enums';
+import { PermissionsGuard } from '@shared/guards/permissions.guard';
 import { CreateRoleDto, UpdateRoleDto, QueryRoleDto } from './dtos';
+import { JwtAuthGuard } from '@modules/auth/guards';
 
 @Controller('roles')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions(PermissionEnum.CREATE_ROLE)
   @Post('/create')
   create(@Body() dto: CreateRoleDto) {
     return this.roleService.create(dto);

@@ -27,8 +27,8 @@ export class PermissionService {
       : {};
 
     return paginate(
-      this.permissionModel.find(search).skip(skip).limit(limit).exec(),
-      this.permissionModel.countDocuments(search).exec(),
+      this.permissionModel.find(search).skip(skip).limit(limit),
+      this.permissionModel.countDocuments(search),
       page,
       limit,
     );
