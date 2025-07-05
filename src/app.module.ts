@@ -5,12 +5,12 @@ import databaseConfig from '@config/database.config';
 import { AppController } from './app.controller';
 
 import { TestModule } from '@modules/test';
-import { AuthModule } from '@modules/auth/auth.module';
-import { RoleModule } from '@modules/role/role.module';
+import { AuthModule } from '@modules/auth';
+import { RoleModule } from '@modules/role';
 import { UserModule } from '@modules/user';
 import { PermissionModule } from '@modules/permission';
-import { AuditLogModule } from '@modules/audit-log/audit-log.module';
-import { CreateAuditLogMiddleware } from '@shared/middlewares/create-audit-log.middleware';
+import { AuditLogModule } from '@modules/audit-log';
+import { CreateAuditLogMiddleware } from '@shared/middlewares';
 
 @Module({
   imports: [
