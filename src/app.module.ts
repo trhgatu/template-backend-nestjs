@@ -8,6 +8,7 @@ import { TestModule } from '@modules/test';
 import { AuthModule } from '@modules/auth';
 import { RoleModule } from '@modules/role';
 import { UserModule } from '@modules/user';
+import { SeederModule } from '@shared/seeder';
 import { PermissionModule } from '@modules/permission';
 import { AuditLogModule } from '@modules/audit-log';
 import { CreateAuditLogMiddleware } from '@shared/middlewares';
@@ -29,6 +30,7 @@ import { CreateAuditLogMiddleware } from '@shared/middlewares';
     UserModule,
     PermissionModule,
     AuditLogModule,
+    SeederModule,
   ],
   controllers: [AppController],
 })
