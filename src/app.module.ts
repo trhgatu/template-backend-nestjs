@@ -5,6 +5,8 @@ import databaseConfig from '@config/database.config';
 import { AppController } from './app.controller';
 
 import { TestModule } from '@modules/test';
+import { AuthModule } from '@modules/auth/auth.module';
+import { RoleModule } from '@modules/role/role.module';
 /* import { AppService } from './app.service';  */
 
 @Module({
@@ -20,6 +22,8 @@ import { TestModule } from '@modules/test';
       },
     }),
     TestModule,
+    AuthModule,
+    RoleModule,
   ],
   controllers: [AppController],
 })
