@@ -1,22 +1,22 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import databaseConfig from '@config/database.config';
 import { AppController } from './app.controller';
 
 import { TestModule } from '@modules/test';
-import { AuthModule } from '@modules/auth/auth.module';
-import { RoleModule } from '@modules/role/role.module';
+import { AuthModule } from '@modules/auth';
+import { RoleModule } from '@modules/role';
 import { UserModule } from '@modules/user';
 import { PermissionModule } from '@modules/permission';
-/* import { AppService } from './app.service';  */
+import { AuditLogModule } from '@modules/audit-log';
+import { CreateAuditLogMiddleware } from '@shared/middlewares';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [databaseConfig] }),
     MongooseModule.forRootAsync({
       useFactory: () => {
-        console.log('🚀 MongoDB URI:', process.env.MONGODB_URI);
         return {
           uri: process.env.MONGODB_URI,
           autoIndex: true,
@@ -28,7 +28,15 @@ import { PermissionModule } from '@modules/permission';
     RoleModule,
     UserModule,
     PermissionModule,
+    AuditLogModule,
   ],
   controllers: [AppController],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(CreateAuditLogMiddleware)
+      .exclude('auth/(.*)', 'audit-logs')
+      .forRoutes('*');
+  }
+}
