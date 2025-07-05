@@ -8,8 +8,7 @@ import { User, UserDocument } from '@modules/user/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { RegisterDto } from './dtos/register.dto';
-import { LoginDto } from './dtos/login.dto';
+import { RegisterDto, LoginDto } from './dtos';
 import { Role, RoleDocument } from '@modules/role/role.schema';
 
 @Injectable()
